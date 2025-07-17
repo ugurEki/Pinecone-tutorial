@@ -8,7 +8,7 @@ import time
 # -------------------------------------------
 
 # We need an API key to make calls to Pinecone project.
-api_key = "pcsk_58S44o_NHzHXDNGRSC1V2UaDS3tft9E2iMEezkJwg7rCHoegJn3uXEmKiaSYLahLM8ZqFs"
+api_key = "*************"
 pc = Pinecone(api_key = api_key)
 
 ## Create an index
