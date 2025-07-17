@@ -8,7 +8,7 @@ import time
 # -------------------------------------------
 
 # We need an API key to make calls to Pinecone project.
-api_key = "********************************************************"
+api_key = "pcsk_58S44o_NHzHXDNGRSC1V2UaDS3tft9E2iMEezkJwg7rCHoegJn3uXEmKiaSYLahLM8ZqFs"
 pc = Pinecone(api_key = api_key)
 
 ## Create an index
@@ -102,4 +102,35 @@ dense_index.upsert_records("first-namespace", records)
 # View stats for the index.
 stats = dense_index.describe_index_stats()
 
-print(stats)
+# print(stats)
+
+# Define the query
+query = "Famous historical structures and monuments"
+
+# Search the dense index using rerank(search again on the initial results for more accurate ranking)
+results = dense_index.search(
+    namespace = "first-namespace",
+    query = {
+        "top_k": 10, 
+        "inputs": {
+            'text': query
+        }
+    },
+    rerank={
+        "model": 'bge-reranker-v2-m3',
+        "top_n": 10,
+        "rank_fields": ["chunk_text"]
+    }
+    
+)
+
+# print(results["result"]["hits"])
+
+for hit in results["result"]["hits"]:
+    print(f"id: {hit['_id']:<5} | score: {hit['_score']:<5} | category: {hit['fields']['category']:<10} | text: {hit['fields']['chunk_text']:<50}")
+    
+## For improving results there are important techniues: 
+#  Reranking, filtering by metedata, hybrid search, chunking strategies. 
+
+## Clean up : When you no longer need your example index
+pc.delete_index(index_name)
